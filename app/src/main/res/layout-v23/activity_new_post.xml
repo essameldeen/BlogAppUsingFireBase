@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity_newPost">
+    <Toolbar
+        android:id="@+id/toolbar_newPost"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
+        android:title="New Post"
+        android:titleTextColor="#fff"
+        />
+
+    <ImageView
+        android:id="@+id/iv_imgePost"
+        android:layout_below="@+id/post_progress"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/smile"
+        android:layout_marginTop="70dp"
+        android:scaleType="center"
+         />
+
+    <EditText
+        android:id="@+id/et_descriptionPost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_imgePost"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="20dp"
+        android:gravity="left"
+        android:textColor="#000"
+        android:hint="Description of Blog"
+        android:backgroundTint="@color/colorAccent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:padding="20dp"
+        android:ems="10"
+        android:inputType="textMultiLine" />
+
+    <Button
+        android:id="@+id/bt_submitPost"
+        android:layout_below="@+id/et_descriptionPost"
+        android:layout_width="351dp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:textColor="#fff"
+        android:padding="16dp"
+        android:layout_margin="50dp"
+        android:text="Post Blog" />
+
+
+    <ProgressBar
+        android:id="@+id/post_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:indeterminate="true"
+        />
+
+
+</RelativeLayout>

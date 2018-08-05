@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "94723931084",
+    "firebase_url": "https://blogappusingfirebase.firebaseio.com",
+    "project_id": "blogappusingfirebase",
+    "storage_bucket": "blogappusingfirebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:94723931084:android:d031c36a4ec37cf5",
+        "android_client_info": {
+          "package_name": "com.example.toshiba.blogappusingfirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "94723931084-4fl4t7vk8i5h5lbtiblus23kh594l20o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.toshiba.blogappusingfirebase",
+            "certificate_hash": "2fdc37138d7d82df289780cf325a653dc6b3e6df"
+          }
+        },
+        {
+          "client_id": "94723931084-qpn493lai0db3gt29ejj4564lmdijcbf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDZLPOSwk_uX_DFMlAPqSiCkHo2fhLzB4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "94723931084-qpn493lai0db3gt29ejj4564lmdijcbf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
