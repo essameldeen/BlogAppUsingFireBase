@@ -2,7 +2,10 @@ package com.example.toshiba.blogappusingfirebase;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,6 +14,9 @@ import android.view.View;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.example.toshiba.blogappusingfirebase.Fragment.accountFragment;
+import com.example.toshiba.blogappusingfirebase.Fragment.homeFragment;
+import com.example.toshiba.blogappusingfirebase.Fragment.notificationFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,25 +24,37 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private Toolbar mainToolBar;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, BottomNavigationView.OnNavigationItemReselectedListener, BottomNavigationView.OnNavigationItemSelectedListener {
+    private  Toolbar mainToolBar;
     private  FirebaseAuth auth;
-    private FloatingActionButton bt_addPost;
+    private  FloatingActionButton bt_addPost;
     private  String currentUserId;
-    private FirebaseFirestore firestore;
-
+    private  FirebaseFirestore firestore;
+    private BottomNavigationView  bt_navigationView;
+    private homeFragment home;
+    private notificationFragment notification;
+    private accountFragment account;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mainToolBar=(Toolbar)findViewById(R.id.mainToolBar);
         bt_addPost = (FloatingActionButton)findViewById(R.id.bt_addPost);
-
-        setSupportActionBar(mainToolBar);
-        bt_addPost.setOnClickListener(this);
+        bt_navigationView=(BottomNavigationView)findViewById(R.id.mainNavigation);
 
         auth=FirebaseAuth.getInstance();
         firestore=FirebaseFirestore.getInstance();
+
+        //Fragments
+         home = new homeFragment();
+         notification=new notificationFragment();
+         account=new accountFragment();
+         //
+         replaceFrgment(home);
+         //
+        setSupportActionBar(mainToolBar);
+        bt_addPost.setOnClickListener(this);
+        bt_navigationView.setOnNavigationItemSelectedListener(this);
 
 
     }
@@ -83,8 +101,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                              }else {
 
-
-
                              }
 
 
@@ -117,5 +133,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Intent newPostIntent =  new Intent(MainActivity.this ,activity_newPost.class);
             startActivity(newPostIntent);
         }
+    }
+    private void replaceFrgment(Fragment fragment){
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.mainContainer,fragment);
+        fragmentTransaction.commit();
+
+    }
+
+    @Override
+    public void onNavigationItemReselected(@NonNull MenuItem item) {
+
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId()==R.id.home_menu){
+            replaceFrgment(home);
+            return  true;
+        }else if(item.getItemId()==R.id.notifiaction_menu){
+            replaceFrgment(notification);
+            return  true;
+        }else if(item.getItemId()==R.id.account_menu){
+            replaceFrgment(account);
+            return  true;
+        }
+        return false;
     }
 }

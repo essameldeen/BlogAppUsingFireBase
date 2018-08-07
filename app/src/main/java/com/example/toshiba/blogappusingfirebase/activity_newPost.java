@@ -1,6 +1,7 @@
 package com.example.toshiba.blogappusingfirebase;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -26,10 +27,21 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+
+import id.zelory.compressor.Compressor;
 
 public class activity_newPost extends AppCompatActivity implements View.OnClickListener {
+
     private Toolbar toolbar;
     private ImageView iv_postImage;
     private EditText et_descriptionPost;
@@ -73,34 +85,68 @@ public class activity_newPost extends AppCompatActivity implements View.OnClickL
             final String description = et_descriptionPost.getText().toString();
             if(!(TextUtils.isEmpty(description))&& imageUrl!=null){
                 progress.setVisibility(View.VISIBLE);
-               String randomName= FieldValue.serverTimestamp().toString();
+               final String randomName= UUID.randomUUID().toString();
                 StorageReference filePath=storageReference.child("Post_images").child(randomName+".jpg");
-                filePath.putFile(imageUrl).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                 filePath.putFile(imageUrl).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         if(task.isSuccessful()){
-                            String downloadUrl=task.getResult().getDownloadUrl().toString();
-                            Map<String,Object> postMap=new HashMap<>();
-                            postMap.put("image_url",downloadUrl);
-                            postMap.put("desc",description);
-                            postMap.put("user_id",curentUserId);
-                            postMap.put("time",FieldValue.serverTimestamp().toString());
-                            firestore.collection("Posts").add(postMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentReference> task) {
-                                        if(task.isSuccessful()){
-                                            progress.setVisibility(View.INVISIBLE);
-                                            Toast.makeText(activity_newPost.this, "Post Added", Toast.LENGTH_SHORT).show();
-                                            Intent mainPage=new Intent(activity_newPost.this,MainActivity.class);
-                                            startActivity(mainPage);
-                                            finish();
+                            final String downloadUrl=task.getResult().getDownloadUrl().toString();
+                            Bitmap compressedImageFile=null;
+                            File fileImage=new File(imageUrl.getPath());
+                            try {
+                                 compressedImageFile = new Compressor(activity_newPost.this)
+                                        .setMaxHeight(100)
+                                        .setMaxWidth(100)
+                                        .setQuality(2)
+                                        .compressToBitmap(fileImage);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
 
-                                        }else {
-                                            progress.setVisibility(View.INVISIBLE);
-                                            Toast.makeText(activity_newPost.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                        }
+                            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                            compressedImageFile.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+                            byte[] thumData=outputStream.toByteArray();
+                            UploadTask uploadTask=storageReference.child("Post_images/thumbs").child(randomName+".jpg").putBytes(thumData);
+                            uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                       if(task.isSuccessful()){
+                                           int time = (int) (System.currentTimeMillis());
+                                           Timestamp tsTemp = new Timestamp(time);
+                                           long s = tsTemp.getTime();
+                                           String timestamp = android.text.format.DateFormat.format("dd/mm/yyyy",new Date(s)).toString();
+
+                                           String download_thumb= task.getResult().getDownloadUrl().toString();
+                                           Map<String,Object> postMap=new HashMap<>();
+                                           postMap.put("image_url",downloadUrl);
+                                           postMap.put("thumb",download_thumb);
+                                           postMap.put("desc",description);
+                                           postMap.put("user_id",curentUserId);
+                                           postMap.put("timeStamp",timestamp);
+                                           firestore.collection("Posts").add(postMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                               @Override
+                                               public void onComplete(@NonNull Task<DocumentReference> task) {
+                                                   if(task.isSuccessful()){
+                                                       progress.setVisibility(View.INVISIBLE);
+                                                       Toast.makeText(activity_newPost.this, "Post Added", Toast.LENGTH_SHORT).show();
+                                                       Intent mainPage=new Intent(activity_newPost.this,MainActivity.class);
+                                                       startActivity(mainPage);
+                                                       finish();
+
+                                                   }else {
+                                                       progress.setVisibility(View.INVISIBLE);
+                                                       Toast.makeText(activity_newPost.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                   }
+                                               }
+                                           });
+                                       }else {
+                                           progress.setVisibility(View.INVISIBLE);
+                                           Toast.makeText(activity_newPost.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                       }
                                 }
                             });
+
                         }else {
                             progress.setVisibility(View.INVISIBLE);
                             Toast.makeText(activity_newPost.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
